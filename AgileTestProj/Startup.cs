@@ -51,7 +51,6 @@ namespace AgileTestProj
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddTransient<IAspNetUserRepository, AspNetUserRepository>();
             services.AddTransient<ITicketRepository, TicketRepository>();
 
         }

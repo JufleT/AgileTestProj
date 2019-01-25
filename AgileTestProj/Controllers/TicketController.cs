@@ -20,16 +20,22 @@ namespace AgileTestProj.Controllers
         [Route("ticket")]
         public IActionResult Create(Ticket ticket)
         {
+            try
+            {
+                ticket.TicketId = Guid.NewGuid();
+                ticket.TicketStatus = ticket.TicketStatus ?? 0;
 
-            ticket.TicketId = Guid.NewGuid();
-            ticket.TicketStatus = ticket.TicketStatus ?? 0;
+                if (ModelState.IsValid) return Conflict();
 
-            if (ModelState.IsValid) return BadRequest();
+                ticketRepository.Create(ticket);
 
-            ticketRepository.Create(ticket);
+                return Ok(ticket);
+            }
+            catch (Exception ex)
+            {
+                return Conflict(ex);
+            }
 
-            return Ok(ticket);
-          
         }
 
         [HttpGet]
@@ -54,16 +60,25 @@ namespace AgileTestProj.Controllers
         [Route("ticket/update")]
         public IActionResult Update(Guid id, Ticket ticket)
         {
-            var ticketDB = ticketRepository.Get(x => x.TicketId == id).FirstOrDefault();
-            if (ticketDB == null) return NotFound();
+            try
+            {
 
-            if (ticket.TicketStatus != null) ticketDB.TicketStatus = ticket.TicketStatus;
-            if (ticket.Description != null) ticketDB.Description = ticket.Description;
-            if (ticket.Name != null) ticketDB.Name = ticket.Name;
+                var ticketDB = ticketRepository.Get(x => x.TicketId == id).FirstOrDefault();
+                if (ticketDB == null) return NotFound();
 
-            ticketRepository.Update(ticketDB);
+                if (ticket.TicketStatus != null) ticketDB.TicketStatus = ticket.TicketStatus;
+                if (ticket.Description != null) ticketDB.Description = ticket.Description;
+                if (ticket.Name != null) ticketDB.Name = ticket.Name;
 
-            return Ok();
+                ticketRepository.Update(ticketDB);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Conflict(ex);
+
+            }
         }
 
         [HttpDelete("{id}")]
